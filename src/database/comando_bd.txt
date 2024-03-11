@@ -1,0 +1,182 @@
+CREATE TABLE usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(50),
+    apellido_usuario VARCHAR(50),
+    email_usuario VARCHAR(100),
+    rol ENUM('administrador', 'Encargado', 'Usuario'),
+    numero VARCHAR(20),
+    contraseña_usuario VARCHAR(255), -- Asegúrate de usar un algoritmo seguro para almacenar contraseñas
+    Id_ficha INT,
+    Estado ENUM('Activo', 'Inactivo')
+);
+
+CREATE TABLE Movimiento (
+    Codigo_movimiento INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_movimiento DATE,
+    Usuario_solicitud INT, -- Aquí debes ajustar el tipo de dato según la relación con la tabla "usuario"
+    fk_movimiento INT, -- Este campo representa alguna relación con otra tabla, ajústalo según tus necesidades
+    Estado ENUM('Confirmada', 'En espera', 'Cancelada', 'En Prestamo', 'Finalizada') DEFAULT 'En espera'
+);
+
+CREATE TABLE Tipo_movimiento (
+    codigo_tipo INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_movimiento VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Detalle_movimiento (
+    codigo_detalle INT AUTO_INCREMENT PRIMARY KEY,
+    fk_movimiento INT,
+    fk_elemento INT, -- Ajusta el tipo de dato según la relación con la tabla correspondiente
+    estado ENUM('Confirmada', 'En espera', 'Cancelada', 'En Prestamo', 'Finalizada') DEFAULT 'En espera',
+    fecha_vencimiento DATE,
+    cantidad INT,
+    Usuario_recibe INT, -- Ajusta el tipo de dato según la relación con la tabla "usuario"
+    Usuario_entrega INT, -- Ajusta el tipo de dato según la relación con la tabla "usuario"
+    Observaciones TEXT
+);
+
+
+CREATE TABLE Elemento (
+    Codigo_elemento INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_elemento VARCHAR(50) NOT NULL,
+    stock INT,
+    fk_tipoElemento INT, -- Esta es la clave foránea que debes ajustar según tus necesidades
+    fk_unidadMedida INT, -- Esta es la clave foránea que debes ajustar según tus necesidades
+    fk_categoria INT, -- Esta es la clave foránea que debes ajustar según tus necesidades
+    fk_tipoEmpaque INT, -- Esta es la clave foránea que debes ajustar según tus necesidades
+    fk_detalleUbicacion INT, -- Esta es la clave foránea que debes ajustar según tus necesidades
+    Estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo'
+);
+
+
+CREATE TABLE Tipo_elemento (
+    codigo_Tipo INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_tipoElemento VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE Unidad_medida (
+    codigo_medida INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Medida VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE Categoria_elemento (
+    codigo_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Categoria VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE Categoria_elemento (
+    codigo_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Categoria VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Tipo_empaque ( 
+    codigo_Empaque INT AUTO_INCREMENT PRIMARY KEY, 
+    Nombre_Empaque VARCHAR(50) NOT NULL 
+);
+
+CREATE TABLE Detalle_ubicacion ( 
+    codigo_Detalle INT AUTO_INCREMENT PRIMARY KEY, 
+    Nombre_ubicacion VARCHAR(50) NOT NULL, 
+    fk_bodega INT 
+);
+
+CREATE TABLE Bodega ( 
+    codigo_Bodega INT AUTO_INCREMENT PRIMARY KEY, 
+    ubicacion VARCHAR(50) NOT NULL, 
+    Nombre_bodega VARCHAR(50) NOT NULL, 
+    Estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo' 
+);
+
+
+
+#Relación entre la tabla "Movimiento" y "usuario" (clave foránea en "Movimiento"):
+ALTER TABLE Movimiento
+ADD CONSTRAINT fk_usuario_movimiento
+FOREIGN KEY (Usuario_solicitud)
+REFERENCES usuario(id_usuario);
+
+#Relación entre la tabla "Movimiento" y "Tipo_movimiento" (clave foránea en "Movimiento"):
+ALTER TABLE Movimiento
+ADD CONSTRAINT fk_tipo_movimiento
+FOREIGN KEY (fk_movimiento)
+REFERENCES Tipo_movimiento(codigo_tipo);
+
+#Relación entre la tabla "Detalle_movimiento" y "Elemento" (clave foránea en "Detalle_movimiento"):
+ALTER TABLE Detalle_movimiento
+ADD CONSTRAINT fk_elemento_detalle
+FOREIGN KEY (fk_elemento)
+REFERENCES Elemento(Codigo_elemento);
+
+#Relación entre la tabla "usuario" y "Detalle_movimiento" (clave foránea en "Detalle_movimiento"):
+ALTER TABLE Detalle_movimiento
+ADD CONSTRAINT fk_usuario_recibe_detalle
+FOREIGN KEY (Usuario_recibe)
+REFERENCES usuario(id_usuario);
+
+#Relación entre la tabla "Elemento" y "Tipo_elemento" (clave foránea en "Elemento"):
+ALTER TABLE Elemento
+ADD CONSTRAINT fk_tipoElemento_elemento
+FOREIGN KEY (fk_tipoElemento)
+REFERENCES Tipo_elemento(codigo_Tipo);
+
+#Relación entre la tabla "Elemento" y "Unidad_medida" (clave foránea en "Elemento"):
+ALTER TABLE Elemento
+ADD CONSTRAINT fk_unidadMedida_elemento
+FOREIGN KEY (fk_unidadMedida)
+REFERENCES Unidad_medida(codigo_medida);
+
+#Relación entre la tabla "Elemento" y "Categoria_elemento" (clave foránea en "Elemento"):
+ALTER TABLE Elemento
+ADD CONSTRAINT fk_categoria_elemento
+FOREIGN KEY (fk_categoria)
+REFERENCES Categoria_elemento(codigo_Categoria);
+
+#Relación entre la tabla "Elemento" y "Tipo_empaque" (clave foránea en "Elemento"):
+ALTER TABLE Elemento
+ADD CONSTRAINT fk_tipoEmpaque_elemento
+FOREIGN KEY (fk_tipoEmpaque)
+REFERENCES Tipo_empaque(codigo_Empaque);
+
+#Relación entre la tabla "Elemento" y "Detalle_ubicacion" (clave foránea en "Elemento"):
+ALTER TABLE Elemento
+ADD CONSTRAINT fk_detalleUbicacion_elemento
+FOREIGN KEY (fk_detalleUbicacion)
+REFERENCES Detalle_ubicacion(codigo_Detalle);
+
+#Relación entre la tabla "Detalle_ubicacion" y "Bodega" (clave foránea en "Detalle_ubicacion"):
+ALTER TABLE Detalle_ubicacion
+ADD CONSTRAINT fk_bodega_detalleUbicacion
+FOREIGN KEY (fk_bodega)
+REFERENCES Bodega(codigo_Bodega);
+
+#Registro de usuarios
+INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
+VALUES ('Juan', 'Perez', 'juan.perez@example.com', 'administrador', '123456789', '[contraseña encriptada]', NULL, 'Activo');
+
+INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
+VALUES ('Maria', 'Gonzalez', 'maria.gonzalez@example.com', 'Encargado', '987654321', '[contraseña encriptada]', NULL, 'Activo');
+
+INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
+VALUES ('Luis', 'Martinez', 'luis.martinez@example.com', 'Usuario', '5551234567', '[contraseña encriptada]', NULL, 'Activo');
+
+INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
+VALUES ('Ana', '[apellido de Ana]', 'ana@example.com', 'Usuario', '5559876543', '[contraseña encriptada]', NULL, 'Activo');
+
+INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
+VALUES ('Elena', '[apellido de Elena]', 'elena@example.com', 'Usuario', '5551234543', '[contraseña encriptada]', NULL, 'Inactivo');
+
+#Registro de Tipos Movimientos
+INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Prestamo');
+INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Entrada');
+INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Salida');
+
+#Registro Movimientos
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-11', 1, 1, 'Confirmada');
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-12', 2, 2, 'En espera');
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-13', 3, 3, 'Cancelada');
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-14', 4, 1, 'En Prestamo');
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-15', 5, 2, 'Finalizada');
+

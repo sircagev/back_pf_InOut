@@ -1,6 +1,10 @@
+//Importaciones de Configuracion
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+
+//Importaciones de rutas
+import movimientosRoute from './src/routes/Movimientos.routes.js'
 
 const app=express();
 
@@ -14,6 +18,8 @@ app.get('/',(req, res)=> {
     console.log(process.env);
     res.send('Pagina inicial');
 });
+
+app.use('/movimientos', movimientosRoute);
 
 //Servidor
 app.listen(3000,()=>{

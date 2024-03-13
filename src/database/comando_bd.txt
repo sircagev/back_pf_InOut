@@ -35,7 +35,6 @@ CREATE TABLE Detalle_movimiento (
     Observaciones TEXT
 );
 
-
 CREATE TABLE Elemento (
     Codigo_elemento INT AUTO_INCREMENT PRIMARY KEY,
     Nombre_elemento VARCHAR(50) NOT NULL,
@@ -48,24 +47,20 @@ CREATE TABLE Elemento (
     Estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo'
 );
 
-
 CREATE TABLE Tipo_elemento (
     codigo_Tipo INT AUTO_INCREMENT PRIMARY KEY,
     nombre_tipoElemento VARCHAR(50) NOT NULL
 );
-
 
 CREATE TABLE Unidad_medida (
     codigo_medida INT AUTO_INCREMENT PRIMARY KEY,
     Nombre_Medida VARCHAR(50) NOT NULL
 );
 
-
 CREATE TABLE Categoria_elemento (
     codigo_Categoria INT AUTO_INCREMENT PRIMARY KEY,
     Nombre_Categoria VARCHAR(50) NOT NULL
 );
-
 
 CREATE TABLE Categoria_elemento (
     codigo_Categoria INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,8 +85,6 @@ CREATE TABLE Bodega (
     Estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo' 
 );
 
-
-
 #Relación entre la tabla "Movimiento" y "usuario" (clave foránea en "Movimiento"):
 ALTER TABLE Movimiento
 ADD CONSTRAINT fk_usuario_movimiento
@@ -112,8 +105,8 @@ REFERENCES Elemento(Codigo_elemento);
 
 #Relación entre la tabla "usuario" y "Detalle_movimiento" (clave foránea en "Detalle_movimiento"):
 ALTER TABLE Detalle_movimiento
-ADD CONSTRAINT fk_usuario_recibe_detalle
-FOREIGN KEY (Usuario_recibe)
+ADD CONSTRAINT fk_usuario_entrega_detalle
+FOREIGN KEY (Usuario_entrega)
 REFERENCES usuario(id_usuario);
 
 #Relación entre la tabla "Elemento" y "Tipo_elemento" (clave foránea en "Elemento"):
@@ -152,31 +145,82 @@ ADD CONSTRAINT fk_bodega_detalleUbicacion
 FOREIGN KEY (fk_bodega)
 REFERENCES Bodega(codigo_Bodega);
 
-#Registro de usuarios
+#Registros para la tabla "usuario"
 INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
-VALUES ('Juan', 'Perez', 'juan.perez@example.com', 'administrador', '123456789', '[contraseña encriptada]', NULL, 'Activo');
+VALUES ('Juan', 'Perez', 'juan@example.com', 'administrador', '123456789', 'hashed_password_1', 1, 'Activo'),
+       ('Maria', 'Gomez', 'maria@example.com', 'Encargado', '987654321', 'hashed_password_2', 2, 'Activo'),
+       ('Pedro', 'Rodriguez', 'pedro@example.com', 'Usuario', '456789123', 'hashed_password_3', 3, 'Inactivo'),
+       ('Ana', 'Lopez', 'ana@example.com', 'Usuario', '789123456', 'hashed_password_4', 4, 'Activo'),
+       ('Laura', 'Martinez', 'laura@example.com', 'Usuario', '321654987', 'hashed_password_5', 5, 'Activo');
 
-INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
-VALUES ('Maria', 'Gonzalez', 'maria.gonzalez@example.com', 'Encargado', '987654321', '[contraseña encriptada]', NULL, 'Activo');
+#Registros para la tabla "Tipo_movimiento"
+INSERT INTO Tipo_movimiento (Nombre_movimiento)
+VALUES ('Ingreso'),
+       ('Egreso'),
+       ('Prestamo');
 
-INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
-VALUES ('Luis', 'Martinez', 'luis.martinez@example.com', 'Usuario', '5551234567', '[contraseña encriptada]', NULL, 'Activo');
+#Registros para la tabla "Bodega"
+INSERT INTO Bodega (ubicacion, Nombre_bodega, Estado)
+VALUES ('Calle 1, Ciudad X', 'Bodega Principal', 'Activo'),
+       ('Avenida 2, Ciudad Y', 'Almacén Secundario', 'Activo');
 
-INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
-VALUES ('Ana', '[apellido de Ana]', 'ana@example.com', 'Usuario', '5559876543', '[contraseña encriptada]', NULL, 'Activo');
+#Registros para la tabla "Detalle_ubicacion"
+INSERT INTO Detalle_ubicacion (Nombre_ubicacion, fk_bodega)
+VALUES ('Estantería A', 1),
+       ('Almacén B', 2),
+       ('Oficina Principal', 1),
+       ('Almacén C', 2),
+       ('Estantería B', 1);
 
-INSERT INTO usuario (nombre_usuario, apellido_usuario, email_usuario, rol, numero, contraseña_usuario, Id_ficha, Estado)
-VALUES ('Elena', '[apellido de Elena]', 'elena@example.com', 'Usuario', '5551234543', '[contraseña encriptada]', NULL, 'Inactivo');
+#Registros para la tabla "Movimiento"
+INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado)
+VALUES ('2024-03-10', 1, 1, NULL),
+       ('2024-03-11', 2, 2, NULL),
+       ('2024-03-12', 3, 3, 'Cancelada'),
+       ('2024-03-13', 4, 1, NULL),
+       ('2024-03-14', 5, 2, NULL);
 
-#Registro de Tipos Movimientos
-INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Prestamo');
-INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Entrada');
-INSERT INTO Tipo_movimiento (Nombre_movimiento) VALUES ('Salida');
+#Registros para la tabla "Tipo_elemento"
+INSERT INTO Tipo_elemento (nombre_tipoElemento)
+VALUES ('Devolutivo'),
+       ('Consumible');
 
-#Registro Movimientos
-INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-11', 1, 1, 'Confirmada');
-INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-12', 2, 2, 'En espera');
-INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-13', 3, 3, 'Cancelada');
-INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-14', 4, 1, 'En Prestamo');
-INSERT INTO Movimiento (fecha_movimiento, Usuario_solicitud, fk_movimiento, Estado) VALUES ('2024-03-15', 5, 2, 'Finalizada');
+#Registros para la tabla "Unidad_medida"
+INSERT INTO Unidad_medida (Nombre_Medida)
+VALUES ('Gramo'),
+       ('Kilogramo'),
+       ('Metro Cubico'),
+       ('Centimetro Cubico'),
+       ('Litro');
 
+#Registros para la tabla "Categoria_elemento"
+INSERT INTO Categoria_elemento (Nombre_Categoria)
+VALUES ('Informática'),
+       ('Mobiliario'),
+       ('Electrónica'),
+       ('Accesorios'),
+       ('Material de Oficina');
+
+#Registros para la tabla "Tipo_empaque"
+INSERT INTO Tipo_empaque (Nombre_Empaque)
+VALUES ('Caja'),
+       ('Bolsa'),
+       ('Paquete'),
+       ('Contenedor'),
+       ('Sobre');
+
+#Registros para la tabla "Elemento"
+INSERT INTO Elemento (Nombre_elemento, stock, fk_tipoElemento, fk_unidadMedida, fk_categoria, fk_tipoEmpaque, fk_detalleUbicacion, Estado)
+VALUES ('Computadora', 20, 1, 1, 1, 1, 1, 'Activo'),
+       ('Impresora', 15, 2, 2, 2, 2, 2, 'Activo'),
+       ('Teléfono', 30, 1, 1, 1, 1, 3, 'Activo'),
+       ('Escritorio', 10, 2, 2, 2, 2, 4, 'Inactivo'),
+       ('Silla', 25, 1, 1, 1, 1, 5, 'Activo');
+
+#Registros para la tabla "Detalle_movimiento"
+INSERT INTO Detalle_movimiento (fk_movimiento, fk_elemento, estado, fecha_vencimiento, cantidad, Usuario_recibe, Usuario_entrega, Observaciones)
+VALUES (1, 1, NULL, '2024-03-15', 10, 2, 1, 'Entrega'),
+       (2, 2, NULL, '2024-03-16', 5, 3, 2, ''),
+       (3, 3, 'Cancelada', NULL, 0, NULL, NULL, 'Cancelado por falta de stock'),
+       (4, 1, NULL, '2024-03-17', 3, 4, 5, 'Mas elementos'),
+       (5, 2, NULL, '2024-03-18', 8, 5, 1, 'Se despacharon correctamente los elementos');

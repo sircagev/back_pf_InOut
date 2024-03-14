@@ -81,12 +81,12 @@ try{
 
 const {id} = req.params;
 
-const sql =`UPDATE elementos SET estado = 'inactivo' WHERE codigo_bodega =?`;
+const sql =`UPDATE bodegas SET estado = 'inactivo' WHERE codigo_bodega =?`;
 const [result] = await pool.query(sql,[id]);
 
     
 
-        if(rows.affectedRows > 0) {
+        if(result.affectedRows > 0) {
             return res.status(200).json({"message": "Bodega desactivada con exito con éxito"});
         } else {
             return res.status(403).json({"message": "Bodega no desactivada"});

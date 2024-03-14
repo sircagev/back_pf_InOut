@@ -7,7 +7,7 @@ route.post('/registrar', RegistrarBodega);
 route.get('/listar', listarBodegas);
 route.get('/buscar/:id', BuscarBodega)
 route.put('/actualizar/:id', ActualizarBodega);
-route.delete('/desactivar/:id', DesactivarBodega);
+route.put('/desactivar/:id', DesactivarBodega);
 
 
 export default route;

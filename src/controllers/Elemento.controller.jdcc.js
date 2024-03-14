@@ -22,17 +22,18 @@ export const ListarElemetos = async (req, res) => {
     try {
         let [result] = await pool.query(
                 `SELECT e.*, c.nombre_categoria, n.nombre_tipoElemento, me.Nombre_Medida, em.Nombre_empaque, u.Nombre_ubicacion
-                FROM elemento as e 
-                join categoria_elemento as c on fk_categoria = codigo_categoria 
-                JOIN tipo_elemento AS n on fk_tipoElemento = codigo_Tipo
-                JOIN unidad_medida AS me on fk_unidadMedida = codigo_medida
-                JOIN tipo_empaque AS em ON fk_tipoEmpaque = Codigo_empaque
-                JOIN detalle_ubicacion AS u ON fk_detalleUbicacion = codigo_Detalle
+                FROM elemento AS e 
+                JOIN categoria_elemento AS c ON e.fk_categoria = c.codigo_categoria 
+                JOIN tipo_elemento AS n ON e.fk_tipoElemento = n.codigo_Tipo
+                JOIN unidad_medida AS me ON e.fk_unidadMedida = me.codigo_medida
+                JOIN tipo_empaque AS em ON e.fk_tipoEmpaque = em.Codigo_empaque
+                JOIN detalle_ubicacion AS u ON e.fk_detalleUbicacion = u.codigo_Detalle
+                WHERE e.Estado = 'Activo'
                 ORDER BY e.codigo_elemento ASC`);
         if (result.length > 0) {
             return res.status(200).json(result);
         } else {
-            return res.status(404).json({ "message": "No hay elementos." });
+            return res.status(404).json({ "message": "No hay elementos si." });
         }
     } catch (error) {
         return res.status(500).json({ "message": error.message });

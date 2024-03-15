@@ -19,6 +19,8 @@ app.get('/',(req, res)=> {
 app.use('/usuario', usuarios);
 app.use('/validate',validar);
 
+//Priba de sbuir repositorio
+
 //Servidor
 app.listen(3000,()=>{
     console.log("El servidor se esta ejecutando en el puerto 3000");
